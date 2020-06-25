@@ -1,18 +1,47 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+    <p>{{ greetText }}</p>
+    <p>挨拶した回数 : {{ count }}回</p>
+    <p v-if="isRegulars">いつもありがとうございます</p>
+    <MyButton :greet="greetText" @click="onMyButtonClicked">挨拶する</MyButton>
+    <ResetButton initialValue="hello world" v-model="greetText"></ResetButton>
   </div>
 </template>
 
-<script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
+<script lang="ts">
+import { Component, Vue, Watch } from "vue-property-decorator";
+import MyButton from "@/components/MyButton.vue";
+import ResetButton from "@/components/ResetButton.vue";
 
-export default {
-  name: "Home",
+@Component({
   components: {
-    HelloWorld
+    MyButton,
+    ResetButton
   }
-};
+})
+export default class Home extends Vue {
+  public greetText = "hello world";
+
+  // 下位コンポーネントから持ってくる値
+  private count = 0;
+
+  // 算出プロパティ
+  public get isRegulars(): boolean {
+    return this.count >= 5;
+  }
+
+  //監視
+  @Watch('count')
+  public countChanged() {
+    // メソッド名は任意。監視対象の指定が大切。
+    if(this.count === 5) {
+      alert("常連になりました");
+    }
+  }
+
+  public onMyButtonClicked(count: number) {
+    this.count = count;
+    this.greetText = "こんにちは";
+  }
+}
 </script>
